@@ -1,0 +1,23 @@
+{
+	"name": "innologi/typo3-asset-provider",
+	"type": "library",
+	"description": "Adds the ability to extensions to provide assets via TypoScript configuration, i.e. per controller/action.",
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name": "Frenck Lutke",
+			"email": "typo3@innologi.nl",
+			"homepage": "http://www.innologi.nl",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": "^7.1",
+		"typo3/cms-core": "^8.7"
+	},
+	"autoload": {
+		"psr-4": {
+			"Innologi\\TYPO3AssetProvider\\": "Classes/"
+		}
+	}
+}
