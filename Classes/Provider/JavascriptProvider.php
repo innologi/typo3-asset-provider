@@ -1,8 +1,6 @@
 <?php
 namespace Innologi\TYPO3AssetProvider\Provider;
 
-use TYPO3\CMS\Frontend\Page\PageGenerator;
-
 /**
  * Javascript Asset Provider
  *
@@ -99,7 +97,12 @@ class JavascriptProvider extends ProviderAbstract
         // PageRenderer does not check if removeDefaultJS is set, so we need to instead
         // @see \TYPO3\CMS\Frontend\Page\PageGenerator::renderContentWithHeader() (~line:865)
         if (isset($GLOBALS['TSFE']->config['config']['removeDefaultJS']) && $GLOBALS['TSFE']->config['config']['removeDefaultJS'] === 'external') {
-            $conf['file'] = PageGenerator::inline2TempFile($inline, 'js');
+            if (version_compare(TYPO3_version, '9.4', '<')) {
+                // @extensionScannerIgnoreLine
+                $conf['file'] = \TYPO3\CMS\Frontend\Page\PageGenerator::inline2TempFile($inline, 'js');
+            } else {
+                $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeJavaScriptContentToTemporaryFile($inline);
+            }
             $this->addFile($conf, $id);
         } else {
             $methodName = (bool) $conf['placeInFooter'] ? 'addJsFooterInlineCode' : 'addJsInlineCode';

@@ -1,8 +1,6 @@
 <?php
 namespace Innologi\TYPO3AssetProvider\Provider;
 
-use TYPO3\CMS\Frontend\Page\PageGenerator;
-
 /**
  * CSS Asset Provider
  *
@@ -91,7 +89,12 @@ class CssProvider extends ProviderAbstract
         // @TODO test this
         // @see \TYPO3\CMS\Frontend\Page\PageGenerator::renderContentWithHeader() (~line:570)
         if (isset($GLOBALS['TSFE']->config['config']['inlineStyle2TempFile']) && $GLOBALS['TSFE']->config['config']['inlineStyle2TempFile']) {
-            $conf['file'] = PageGenerator::inline2TempFile($inline, 'css');
+            if (version_compare(TYPO3_version, '9.4', '<')) {
+                // @extensionScannerIgnoreLine
+                $conf['file'] = \TYPO3\CMS\Frontend\Page\PageGenerator::inline2TempFile($inline, 'css');
+            } else {
+                $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeStyleSheetContentToTemporaryFile($inline);
+            }
             $this->addFile($conf, $id);
         } else {
             // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#cssinline

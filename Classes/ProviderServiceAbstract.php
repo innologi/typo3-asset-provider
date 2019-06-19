@@ -17,7 +17,6 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
     /**
      *
      * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
-     * @inject
      */
     protected $objectManager;
 
@@ -34,6 +33,16 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
      * @var array
      */
     protected $typoscript;
+
+    /**
+     * Injects the object manager
+     *
+     * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
+     */
+    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
 
     /**
      * Initializes the configuration
