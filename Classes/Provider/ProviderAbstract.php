@@ -180,7 +180,16 @@ abstract class ProviderAbstract implements ProviderInterface
 
         // if file is not external, resolve and validate (relative) filepath
         if (! isset($conf['external']) || ! ((bool) $conf['external'])) {
-            $conf['file'] = $GLOBALS['TSFE']->tmpl->getFileName($conf['file']);
+            if (version_compare(TYPO3_version, '9.4', '<')) {
+                // @extensionScannerIgnoreLine
+                $conf['file'] = $GLOBALS['TSFE']->tmpl->getFileName($conf['file']);
+            } else {
+                /** @var \TYPO3\CMS\Frontend\Resource\FilePathSanitizer $filePathSanitizer */
+                $filePathSanitizer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                    \TYPO3\CMS\Frontend\Resource\FilePathSanitizer::class
+                );
+                $conf['file'] = $filePathSanitizer->sanitize($conf['file']);
+            }
             if (! isset($conf['file'][0])) {
                 throw new Exception\FileNotFound('File could not be found');
             }

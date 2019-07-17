@@ -23,9 +23,18 @@ trait ProviderControllerTrait
     /**
      *
      * @var \Innologi\TYPO3AssetProvider\ProviderServiceInterface
-     * @inject
      */
     protected $assetProviderService;
+
+    /**
+     *
+     * @param \Innologi\TYPO3AssetProvider\ProviderServiceInterface $assetProviderService
+     * @return void
+     */
+    public function injectAssetProviderService(\Innologi\TYPO3AssetProvider\ProviderServiceInterface $assetProviderService)
+    {
+        $this->assetProviderService = $assetProviderService;
+    }
 
     /**
      *
