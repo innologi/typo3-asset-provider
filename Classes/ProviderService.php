@@ -27,7 +27,7 @@ class ProviderService extends ProviderServiceAbstract
      */
     public function provideAssets(string $extensionKey, string $controllerName, string $actionName): void
     {
-        if (isset($this->assetRegister[$controllerName][$action])) {
+        if (isset($this->assetRegister[$controllerName][$actionName])) {
             // already provided these assets
             return;
         }
