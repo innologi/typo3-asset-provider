@@ -25,13 +25,8 @@ class JavascriptProvider extends ProviderAbstract
     protected $defaultConfiguration = [
         'placeInFooter' => false,
         'type' => 'text/javascript',
-        'disableCompression' => false,
         'forceOnTop' => false,
-        'excludeFromConcatenation' => false,
-        'allWrap' => '',
-        'splitChar' => '|',
         'async' => false,
-        'integrity' => ''
     ];
 
     /**
@@ -43,20 +38,7 @@ class JavascriptProvider extends ProviderAbstract
      */
     public function addLibrary(array $conf, string $id = ''): void
     {
-        $methodName = (bool) $conf['placeInFooter'] ? 'addJsFooterLibrary' : 'addJsLibrary';
-        // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#includejslibs-array
-        $this->pageRenderer->$methodName(
-            $id,
-            $conf['file'],
-            $conf['type'],
-            ! ((bool) $conf['disableCompression']),
-            (bool) $conf['forceOnTop'],
-            $conf['allWrap'],
-            (bool) $conf['excludeFromConcatenation'],
-            $conf['splitChar'],
-            $conf['async'],
-            $conf['integrity']
-        );
+        $this->addFile($conf, $id);
     }
 
     /**
@@ -68,20 +50,26 @@ class JavascriptProvider extends ProviderAbstract
      */
     public function addFile(array $conf, string $id = ''): void
     {
-        // @TODO test this
-        $methodName = (bool) $conf['placeInFooter'] ? 'addJsFooterFile' : 'addJsFile';
-        // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#includejs-array
-        $this->pageRenderer->$methodName(
-            $conf['file'],
-            $conf['type'],
-            ! ((bool) $conf['disableCompression']),
-            (bool) $conf['forceOnTop'],
-            $conf['allWrap'],
-            (bool) $conf['excludeFromConcatenation'],
-            $conf['splitChar'],
-            $conf['async'],
-            $conf['integrity']
-        );
+        $file = $this->getStreamlinedFileName($conf['file']);
+        $type = $conf['type'] !== false ? ' type="' . htmlspecialchars($conf['type']) . '"' : '';
+        $async = $conf['async'] !== false ? ' async="async"' : '';
+        $tag = '<script src="' . htmlspecialchars($file) . '"' . $type . $async . '></script>';
+
+        $inFooter = (bool)$conf['placeInFooter'];
+
+        if ((bool)$conf['forceOnTop']) {
+            if ($inFooter) {
+                \array_unshift($this->footerFiles, $tag);
+            } else {
+                \array_unshift($this->headerFiles, $tag);
+            }
+        } else {
+            if ($inFooter) {
+                $this->footerFiles[] = $tag;
+            } else {
+                $this->headerFiles[] = $tag;
+            }
+        }
     }
 
     /**
@@ -94,20 +82,7 @@ class JavascriptProvider extends ProviderAbstract
      */
     public function addInline(string $inline, array $conf, string $id = ''): void
     {
-        // PageRenderer does not check if removeDefaultJS is set, so we need to instead
-        // @see \TYPO3\CMS\Frontend\Page\PageGenerator::renderContentWithHeader() (~line:865)
-        if (isset($GLOBALS['TSFE']->config['config']['removeDefaultJS']) && $GLOBALS['TSFE']->config['config']['removeDefaultJS'] === 'external') {
-            $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeJavaScriptContentToTemporaryFile($inline);
-            $this->addFile($conf, $id);
-        } else {
-            $methodName = (bool) $conf['placeInFooter'] ? 'addJsFooterInlineCode' : 'addJsInlineCode';
-            // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#jsinline
-            $this->pageRenderer->$methodName(
-                $id,
-                $inline,
-                ! ((bool) $conf['disableCompression']),
-                (bool) $conf['forceOnTop']
-            );
-        }
+        $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeJavaScriptContentToTemporaryFile($inline);
+        $this->addFile($conf, $id);
     }
 }

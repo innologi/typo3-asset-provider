@@ -2,6 +2,8 @@
 namespace Innologi\TYPO3AssetProvider\Provider;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 /**
@@ -41,6 +43,9 @@ abstract class ProviderAbstract implements ProviderInterface
      * @var string
      */
     protected $assetType;
+
+    protected array $headerFiles = [];
+    protected array $footerFiles = [];
 
     /**
      * Class Constructer
@@ -144,6 +149,17 @@ abstract class ProviderAbstract implements ProviderInterface
                 }
             }
         }
+
+        if (!empty($this->headerFiles)) {
+            foreach ($this->headerFiles as $data) {
+                $this->pageRenderer->addHeaderData($data);
+            }
+        }
+        if (!empty($this->footerFiles)) {
+            foreach ($this->footerFiles as $data) {
+                $this->pageRenderer->addFooterData($data);
+            }
+        }
     }
 
     /**
@@ -192,5 +208,21 @@ abstract class ProviderAbstract implements ProviderInterface
 
         // return converted configuration
         return $conf;
+    }
+
+    protected function getStreamlinedFileName($file, $prepareForOutput = true)
+    {
+        if (str_starts_with($file, 'EXT:')) {
+            $file = Environment::getPublicPath() . '/' . PathUtility::getPublicResourceWebPath($file, false);
+            // as the path is now absolute, make it "relative" to the current script to stay compatible
+            $file = PathUtility::getRelativePathTo($file) ?? '';
+            $file = rtrim($file, '/');
+        } else {
+            $file = GeneralUtility::resolveBackPath($file);
+        }
+        if ($prepareForOutput) {
+            $file = GeneralUtility::createVersionNumberedFilename($file);
+        }
+        return $file;
     }
 }

@@ -26,9 +26,7 @@ class CssProvider extends ProviderAbstract
         'rel' => 'stylesheet',
         'media' => 'all',
         'title' => '',
-        'disableCompression' => false,
         'forceOnTop' => false,
-        'excludeFromConcatenation' => false
     ];
 
     /**
@@ -40,18 +38,7 @@ class CssProvider extends ProviderAbstract
      */
     public function addLibrary(array $conf, string $id = ''): void
     {
-        // @TODO test this
-        // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#includecsslibs-array
-        $this->pageRenderer->addCssLibrary(
-            $conf['file'],
-            $conf['rel'],
-            $conf['media'],
-            $conf['title'],
-            ! ((bool) $conf['disableCompression']),
-            (bool) $conf['forceOnTop'],
-            '',
-            (bool) $conf['excludeFromConcatenation']
-        );
+        $this->addFile($conf, $id);
     }
 
     /**
@@ -63,17 +50,19 @@ class CssProvider extends ProviderAbstract
      */
     public function addFile(array $conf, string $id = ''): void
     {
-        // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#includecss-array
-        $this->pageRenderer->addCssFile(
-            $conf['file'],
-            $conf['rel'],
-            $conf['media'],
-            $conf['title'],
-            ! ((bool) $conf['disableCompression']),
-            (bool) $conf['forceOnTop'],
-            '',
-            (bool) $conf['excludeFromConcatenation']
-        );
+        $file = $this->getStreamlinedFileName($conf['file']);
+        $title = isset($conf['title'][0]) ? ' title="' . htmlspecialchars($conf['title']) . '"' : '';
+        $tag = '<link rel="' . htmlspecialchars($conf['rel'])
+            . '" href="' . htmlspecialchars($file)
+            . '" media="' . htmlspecialchars($conf['media']) . '"'
+            . $title
+            . ($this->pageRenderer->getRenderXhtml() ? ' /' : '') . '>';
+
+        if ((bool)($conf['forceOnTop'] ?? false)) {
+            \array_unshift($this->headerFiles, $tag);
+        } else {
+            $this->headerFiles[] = $tag;
+        }
     }
 
     /**
@@ -86,19 +75,7 @@ class CssProvider extends ProviderAbstract
      */
     public function addInline(string $inline, array $conf, string $id = ''): void
     {
-        // @TODO test this
-        // @see \TYPO3\CMS\Frontend\Page\PageGenerator::renderContentWithHeader() (~line:570)
-        if (isset($GLOBALS['TSFE']->config['config']['inlineStyle2TempFile']) && $GLOBALS['TSFE']->config['config']['inlineStyle2TempFile']) {
-            $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeStyleSheetContentToTemporaryFile($inline);
-            $this->addFile($conf, $id);
-        } else {
-            // @see http://docs.typo3.org/typo3cms/TyposcriptReference/Setup/Page/Index.html#cssinline
-            $this->pageRenderer->addCssInlineBlock(
-                $name,
-                $block,
-                ! ((bool) $conf['disableCompression']),
-                (bool) $conf['forceOnTop']
-            );
-        }
+        $conf['file'] = \TYPO3\CMS\Core\Utility\GeneralUtility::writeStyleSheetContentToTemporaryFile($inline);
+        $this->addFile($conf, $id);
     }
 }
