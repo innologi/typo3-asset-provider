@@ -2,7 +2,6 @@
 namespace Innologi\TYPO3AssetProvider;
 
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Fluid\View\AbstractTemplateView;
 
 /**
  * Provider Controller Trait
@@ -43,7 +42,7 @@ trait ProviderControllerTrait
      */
     protected function initializeView(ViewInterface $view): void
     {
-        if ($view instanceof AbstractTemplateView && $this->request->getFormat() === 'html') {
+        if ($this->request->getFormat() === 'html') {
             // provide assets as configured per action
             $this->assetProviderService->provideAssets(
                 $this->request->getControllerExtensionKey(),
@@ -51,6 +50,5 @@ trait ProviderControllerTrait
                 $this->request->getControllerActionName()
             );
         }
-        parent::initializeView();
     }
 }
