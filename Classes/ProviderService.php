@@ -73,7 +73,7 @@ class ProviderService extends ProviderServiceAbstract
         foreach ($configuration as $type => $conf) {
             // e.g. JavascriptProvider, CssProvider
             $className = ucfirst($type) . 'Provider';
-            /** @var ProviderInterface $assetProvider */
+            /** @var Provider\ProviderInterface $assetProvider */
             $assetProvider = $this->objectManager->get(__NAMESPACE__ . '\\Provider\\' . $className);
             $assetProvider->processConfiguration($conf, $typoscript[$type . '.']);
         }

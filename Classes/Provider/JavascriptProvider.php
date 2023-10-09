@@ -51,9 +51,9 @@ class JavascriptProvider extends ProviderAbstract
     public function addFile(array $conf, string $id = ''): void
     {
         $file = $this->getStreamlinedFileName($conf['file']);
-        $type = $conf['type'] !== false ? ' type="' . htmlspecialchars($conf['type']) . '"' : '';
+        $type = $conf['type'] !== false ? ' type="' . htmlspecialchars((string) $conf['type']) . '"' : '';
         $async = $conf['async'] !== false ? ' async="async"' : '';
-        $tag = '<script src="' . htmlspecialchars($file) . '"' . $type . $async . '></script>';
+        $tag = '<script src="' . htmlspecialchars((string) $file) . '"' . $type . $async . '></script>';
 
         $inFooter = (bool)$conf['placeInFooter'];
 

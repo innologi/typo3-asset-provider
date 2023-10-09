@@ -212,7 +212,7 @@ abstract class ProviderAbstract implements ProviderInterface
 
     protected function getStreamlinedFileName($file, $prepareForOutput = true)
     {
-        if (str_starts_with($file, 'EXT:')) {
+        if (str_starts_with((string) $file, 'EXT:')) {
             $file = Environment::getPublicPath() . '/' . PathUtility::getPublicResourceWebPath($file, false);
             // as the path is now absolute, make it "relative" to the current script to stay compatible
             $file = PathUtility::getRelativePathTo($file) ?? '';

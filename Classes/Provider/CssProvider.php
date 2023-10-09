@@ -51,10 +51,10 @@ class CssProvider extends ProviderAbstract
     public function addFile(array $conf, string $id = ''): void
     {
         $file = $this->getStreamlinedFileName($conf['file']);
-        $title = isset($conf['title'][0]) ? ' title="' . htmlspecialchars($conf['title']) . '"' : '';
-        $tag = '<link rel="' . htmlspecialchars($conf['rel'])
-            . '" href="' . htmlspecialchars($file)
-            . '" media="' . htmlspecialchars($conf['media']) . '"'
+        $title = isset($conf['title'][0]) ? ' title="' . htmlspecialchars((string) $conf['title']) . '"' : '';
+        $tag = '<link rel="' . htmlspecialchars((string) $conf['rel'])
+            . '" href="' . htmlspecialchars((string) $file)
+            . '" media="' . htmlspecialchars((string) $conf['media']) . '"'
             . $title
             . ($this->pageRenderer->getRenderXhtml() ? ' /' : '') . '>';
 
