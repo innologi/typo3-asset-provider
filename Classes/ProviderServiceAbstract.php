@@ -15,12 +15,6 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
 {
 
     /**
-     *
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
      * Asset-loading configuration
      *
      * @var array
@@ -34,14 +28,9 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
      */
     protected $typoscript;
 
-    /**
-     * Injects the object manager
-     *
-     * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
-     */
-    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager)
-    {
-        $this->objectManager = $objectManager;
+    public function __construct(
+        protected readonly ConfigurationManagerInterface $configurationManager,
+    ) {
     }
 
     /**
@@ -59,9 +48,7 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
             'default.' => []
         ];
 
-        /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = $this->objectManager->get(ConfigurationManagerInterface::class);
-        $frameworkConfiguration = $configurationManager->getConfiguration(
+        $frameworkConfiguration = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
         );
         if (isset($frameworkConfiguration['assets'])) {
@@ -72,7 +59,7 @@ abstract class ProviderServiceAbstract implements ProviderServiceInterface, Sing
         }
 
         // inline configurations require the original TS
-        $originalTypoScript = $configurationManager->getConfiguration(
+        $originalTypoScript = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
         );
         if (isset($originalTypoScript['plugin.']['tx_' . $extensionKey . '.']['assets.'])) {

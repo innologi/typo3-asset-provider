@@ -1,7 +1,8 @@
 <?php
 namespace Innologi\TYPO3AssetProvider;
 
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
+use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * Provider Controller Trait
@@ -12,12 +13,7 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 trait ProviderControllerTrait
 {
-
-    /**
-     *
-     * @var \TYPO3\CMS\Extbase\Mvc\Request
-     */
-    protected $request;
+    protected RequestInterface $request;
 
     /**
      *
@@ -30,16 +26,11 @@ trait ProviderControllerTrait
      * @param \Innologi\TYPO3AssetProvider\ProviderServiceInterface $assetProviderService
      * @return void
      */
-    public function injectAssetProviderService(\Innologi\TYPO3AssetProvider\ProviderServiceInterface $assetProviderService)
+    public function injectAssetProviderService(\Innologi\TYPO3AssetProvider\ProviderServiceInterface $assetProviderService): void
     {
         $this->assetProviderService = $assetProviderService;
     }
 
-    /**
-     *
-     * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
-     * @return void
-     */
     protected function initializeView(ViewInterface $view): void
     {
         if ($this->request->getFormat() === 'html') {

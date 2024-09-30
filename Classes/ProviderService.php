@@ -1,6 +1,8 @@
 <?php
 namespace Innologi\TYPO3AssetProvider;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * TYPO3 Extbase Asset Provider Service
  *
@@ -74,7 +76,7 @@ class ProviderService extends ProviderServiceAbstract
             // e.g. JavascriptProvider, CssProvider
             $className = ucfirst($type) . 'Provider';
             /** @var Provider\ProviderInterface $assetProvider */
-            $assetProvider = $this->objectManager->get(__NAMESPACE__ . '\\Provider\\' . $className);
+            $assetProvider = GeneralUtility::makeInstance(__NAMESPACE__ . '\\Provider\\' . $className);
             $assetProvider->processConfiguration($conf, $typoscript[$type . '.']);
         }
     }

@@ -17,7 +17,7 @@ class Configuration extends ProviderException
      * @param string $message
      * @return void
      */
-    public function setMessage($message)
+    public function setMessage($message): void
     {
         $this->message = $message;
     }
