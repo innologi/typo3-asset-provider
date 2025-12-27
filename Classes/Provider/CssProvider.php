@@ -56,7 +56,7 @@ class CssProvider extends ProviderAbstract
             . '" href="' . htmlspecialchars((string) $file)
             . '" media="' . htmlspecialchars((string) $conf['media']) . '"'
             . $title
-            . ($this->pageRenderer->getRenderXhtml() ? ' /' : '') . '>';
+            . ($this->pageRenderer->getDocType()->isXmlCompliant() ? ' /' : '') . '>';
 
         if ((bool)($conf['forceOnTop'] ?? false)) {
             \array_unshift($this->headerFiles, $tag);
